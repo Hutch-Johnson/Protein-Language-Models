@@ -65,7 +65,8 @@ def collect_log_prob_esm2(sequence, model, tokenizer):
 
 
 # %%
-def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), cmap='RdBu_r'):
+def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), 
+                cmap='RdBu_r',sequence='sequence'):
 
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
 
@@ -80,9 +81,9 @@ def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), cmap='RdBu_r'):
                             cmap=cmap,
                             center=0,
                             cbar_kws={'label': 'LLR'})
-    plt.xlabel('Position in CRX')
+    plt.xlabel(f'Position')
     plt.ylabel('Amino Acid')
-    plt.title('Log-Likelihood Ratio Matrix')
+    plt.title(f'Log-Likelihood Ratio Matrix \n {sequence}')
     plt.tight_layout()
 
     return plt
@@ -99,7 +100,7 @@ def seq_matrix_dict(sequence_list, model, tokenizer):
         sequence = sequence_list[i]
         lp, rlp, llr = collect_log_prob_esm2(sequence, model, tokenizer)
 
-        seq_dict[i] = {'log_probs': lp, 'ref_log_probs': rlp, 'llr_matrix': llr}
+        seq_dict[i] = {'sequence': sequence, 'log_probs': lp, 'ref_log_probs': rlp, 'llr_matrix': llr}
 
     return seq_dict
 
