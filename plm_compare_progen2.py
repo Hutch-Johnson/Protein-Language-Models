@@ -13,17 +13,17 @@ import pandas as pd
 # %%
 # ProGen2 small model initialization
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using {device} device")
+# device = "cuda" if torch.cuda.is_available() else "cpu"
+# print(f"Using {device} device")
 
-model_name = "hugohrban/progen2-small"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
-model.eval()
+# model_name = "hugohrban/progen2-small"
+# tokenizer = AutoTokenizer.from_pretrained(model_name)
+# model = AutoModelForCausalLM.from_pretrained(model_name)
+# model.eval()
 
 # %%
-model_name = "hugohrban/progen2-small"
-initialize_progen2(model_name)
+# model_name = "hugohrban/progen2-small"
+# initialize_progen2(model_name)
 
 # %%
 def initialize_progen2(model_name):
@@ -63,16 +63,16 @@ def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
 
 
 # %%
-crx_sequence = """
-MMAYMNPGPHYSVNALALSGPSVDLMHQAVPYPSAPRKQRRERTTFTRSQLEELEALFAKTQYPDVYAREEVALKINLPESRVQVWFKNRRAKCRQQRQQQKQQQQPPGGQAKARPAKRKAGTSPRPSTDVCPDPLGISDSYSPPLPGPSGSPTTAVATVSIWSPASESPLPEAQRAGLVASGPSLTSAPYAMTYAPASAFCSSPSAYGSPSSYFSGLDPYLSPMVPQLGGPALSPLSGPSVGPSLAQSPTSLSGQSYGAYSPVDSLEFKDPTGTWKFTYNPMDPLDYKDQSAWKFQIL
-""".replace('\n', '').replace(' ', '')
-prompt_crx = "1" + crx_sequence
+# crx_sequence = """
+# MMAYMNPGPHYSVNALALSGPSVDLMHQAVPYPSAPRKQRRERTTFTRSQLEELEALFAKTQYPDVYAREEVALKINLPESRVQVWFKNRRAKCRQQRQQQKQQQQPPGGQAKARPAKRKAGTSPRPSTDVCPDPLGISDSYSPPLPGPSGSPTTAVATVSIWSPASESPLPEAQRAGLVASGPSLTSAPYAMTYAPASAFCSSPSAYGSPSSYFSGLDPYLSPMVPQLGGPALSPLSGPSVGPSLAQSPTSLSGQSYGAYSPVDSLEFKDPTGTWKFTYNPMDPLDYKDQSAWKFQIL
+# """.replace('\n', '').replace(' ', '')
+# prompt_crx = "1" + crx_sequence
 
 # %%
-model, tokenizer = initialize_progen2(model_name)
+# model, tokenizer = initialize_progen2(model_name)
 
 # %%
-collect_log_prob_pg2(crx_sequence,model,tokenizer)
+# collect_log_prob_pg2(crx_sequence,model,tokenizer)
 
 # %%
 def seq_matrix_dict_pg2(sequence_list, model, tokenizer,device="cpu"):
@@ -83,9 +83,9 @@ def seq_matrix_dict_pg2(sequence_list, model, tokenizer,device="cpu"):
 
     for i in range(n):
         sequence = sequence_list[i]
-        lp, rlp, llr = collect_log_prob_pg2(crx_sequence,model,tokenizer)
+        lp, rlp, llr = collect_log_prob_pg2(sequence,model,tokenizer)
 
-        seq_dict[i] = {'log_probs': lp, 'ref_log_probs': rlp, 'llr_matrix': llr}
+        seq_dict[i] = {'sequence': sequence, 'log_probs': lp, 'ref_log_probs': rlp, 'llr_matrix': llr}
 
     return seq_dict
 

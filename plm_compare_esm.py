@@ -90,7 +90,7 @@ def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10),
 
 
 # %%
-def seq_matrix_dict(sequence_list, model, tokenizer):
+def seq_matrix_dict_esm2(sequence_list, model, tokenizer):
 
     seq_dict = dict()
 
