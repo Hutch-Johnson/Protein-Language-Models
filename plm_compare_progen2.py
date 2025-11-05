@@ -40,6 +40,7 @@ def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
 
     llr_matrix = log_probs - ref_log_probs
     llr_matrix = llr_matrix[:, aa_token_ids]
+    log_probs = log_probs[:, aa_token_ids]
 
     return log_probs, ref_log_probs, llr_matrix
 

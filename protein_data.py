@@ -42,7 +42,6 @@ def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10),
     return plt
 
 def pickle_plm_matrices(dict, filename):
-
     '''
     Saves a dictionary to a pickle file.
     '''
