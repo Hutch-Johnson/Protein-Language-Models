@@ -1,4 +1,3 @@
-# %%
 import torch
 from transformers import AutoModelForCausalLM
 from transformers import AutoTokenizer, EsmForMaskedLM
@@ -10,22 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-# %%
-# ProGen2 small model initialization
 
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-# print(f"Using {device} device")
-
-# model_name = "hugohrban/progen2-small"
-# tokenizer = AutoTokenizer.from_pretrained(model_name)
-# model = AutoModelForCausalLM.from_pretrained(model_name)
-# model.eval()
-
-# %%
-# model_name = "hugohrban/progen2-small"
-# initialize_progen2(model_name)
-
-# %%
 def initialize_progen2(model_name):
     # Define tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
@@ -36,7 +20,6 @@ def initialize_progen2(model_name):
     return model, tokenizer
 
 def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
-
     # Define indices for log-likelihood ratio matrix
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
     aa_token_ids = [tokenizer.convert_tokens_to_ids(aa) for aa in amino_acids]
@@ -61,20 +44,6 @@ def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
     return log_probs, ref_log_probs, llr_matrix
 
 
-
-# %%
-# crx_sequence = """
-# MMAYMNPGPHYSVNALALSGPSVDLMHQAVPYPSAPRKQRRERTTFTRSQLEELEALFAKTQYPDVYAREEVALKINLPESRVQVWFKNRRAKCRQQRQQQKQQQQPPGGQAKARPAKRKAGTSPRPSTDVCPDPLGISDSYSPPLPGPSGSPTTAVATVSIWSPASESPLPEAQRAGLVASGPSLTSAPYAMTYAPASAFCSSPSAYGSPSSYFSGLDPYLSPMVPQLGGPALSPLSGPSVGPSLAQSPTSLSGQSYGAYSPVDSLEFKDPTGTWKFTYNPMDPLDYKDQSAWKFQIL
-# """.replace('\n', '').replace(' ', '')
-# prompt_crx = "1" + crx_sequence
-
-# %%
-# model, tokenizer = initialize_progen2(model_name)
-
-# %%
-# collect_log_prob_pg2(crx_sequence,model,tokenizer)
-
-# %%
 def seq_matrix_dict_pg2(sequence_list, model, tokenizer,device="cpu"):
 
     seq_dict = dict()

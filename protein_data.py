@@ -12,6 +12,14 @@ import pickle
 
 def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), 
                 cmap='RdBu_r',sequence='sequence'):
+    '''
+    Produces a log likelihood ratio matrix heat map with the
+    positions in the protein as the x-axis and the amino acids
+    as the y-axis.
+    Inputs: llr_matrix, a list of positions to display, figsize,
+    cmap and the protein sequence
+    Outputs: matplotlib plot heatmap
+    '''
 
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
 
@@ -34,6 +42,10 @@ def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10),
     return plt
 
 def pickle_plm_matrices(dict, filename):
+
+    '''
+    Saves a dictionary to a pickle file.
+    '''
 
     with open(filename, 'wb') as f:
         pickle.dump(dict, f, protocol=pickle.HIGHEST_PROTOCOL)

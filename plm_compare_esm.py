@@ -9,11 +9,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-# %%
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using {device} device")
-
-# %%
 def initialize_esm2(model_name):
     # Define tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -64,7 +59,6 @@ def collect_log_prob_esm2(sequence, model, tokenizer):
     return log_probs, ref_log_probs, llr_matrix
 
 
-# %%
 def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), 
                 cmap='RdBu_r',sequence='sequence'):
 
@@ -89,7 +83,6 @@ def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10),
     return plt
 
 
-# %%
 def seq_matrix_dict_esm2(sequence_list, model, tokenizer):
 
     seq_dict = dict()
@@ -103,21 +96,3 @@ def seq_matrix_dict_esm2(sequence_list, model, tokenizer):
         seq_dict[i] = {'sequence': sequence, 'log_probs': lp, 'ref_log_probs': rlp, 'llr_matrix': llr}
 
     return seq_dict
-
-# %%
-# model_name = "facebook/esm2_t33_650M_UR50D"
-# crx_sequence = "MMAYMNPGPHYSVNALALSGPSVDLMHQAVPYPSAPRKQRRERTTFTRSQLEELEALFAKTQYPDVYAREEVALKINLPESRVQVWFKNRRAKCRQQRQQQKQQQQPPGGQAKARPAKRKAGTSPRPSTDVCPDPLGISDSYSPPLPGPSGSPTTAVATVSIWSPASESPLPEAQRAGLVASGPSLTSAPYAMTYAPASAFCSSPSAYGSPSSYFSGLDPYLSPMVPQLGGPALSPLSGPSVGPSLAQSPTSLSGQSYGAYSPVDSLEFKDPTGTWKFTYNPMDPLDYKDQSAWKFQIL"
-
-# %%
-# model, tokenizer = initialize_esm2(model_name)
-
-# %%
-# seq_matrix_dict([crx_sequence], model, tokenizer)
-
-# %%
-# crx_lp, crx_rlp, crx_llr = collect_log_prob_esm2(crx_sequence, model, tokenizer)
-
-# %%
-# llr_heatmap(crx_llr,positions=range(20,50))
-
-
