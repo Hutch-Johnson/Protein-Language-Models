@@ -24,19 +24,31 @@ def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
     aa_token_ids = [tokenizer.convert_tokens_to_ids(aa) for aa in amino_acids]
 
-    prompt = "1"+sequence
+    prompt1 = "1"+sequence
+    # prompt2 = 
 
-    input_ids = torch.tensor(tokenizer.encode(prompt)).unsqueeze(0).to(model.device)
+    input_ids1 = torch.tensor(tokenizer.encode(prompt1)).unsqueeze(0).to(model.device)
     with torch.no_grad():
-        logits = model(input_ids).logits
+        logits1 = model(input_ids1).logits
+
+    input_ids2 =  torch.tensor(tokenizer.encode(prompt2)).unsqueeze(0).to(model.device)
+    with torch.no_grad():
+        logits2 = model(input_ids2).logits
+
+    # take averages of matrices, 2nd one in reverse order
+    # logits = (logits1 + logits2)/2
+
+    # or log_probs1 and log_probs2 average
+    # log_probs = (log_probs1 + log_probs2)/2
     
     log_probs = F.log_softmax(logits, dim = -1)
+    n = len(log_probs)
 
     ref_log_probs = log_probs[0, torch.arange(input_ids.size(1)), input_ids[0]]
     ref_log_probs = ref_log_probs.unsqueeze(1)
-    ref_log_probs = ref_log_probs[1:]
+    ref_log_probs = ref_log_probs[:n-1]
 
-    log_probs = log_probs[0,1:]
+    log_probs = log_probs[0,:n-1]
 
     llr_matrix = log_probs - ref_log_probs
     llr_matrix = llr_matrix[:, aa_token_ids]
