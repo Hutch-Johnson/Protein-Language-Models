@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-def initialize_esm2(model_name):
+def initialize_esm2(model_name, device="cpu"):
     # Define tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = EsmForMaskedLM.from_pretrained(model_name).to(device)
