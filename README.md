@@ -6,6 +6,6 @@ There is a .yml file `PMLenv.yml` containing the necessary Python packages.  The
 
 You can import each by running 
 
-`from plm_compare_esm2 import *`
+`from plm_compare_esm import *`
 
 `from plm_compare_progen2 import *`
