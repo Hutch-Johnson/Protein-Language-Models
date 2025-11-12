@@ -1,4 +1,4 @@
-## About this repo
+## Protein Language Model Study
 
 This repo includes a collection of notebooks containing code for comparing different protein language models.
 
