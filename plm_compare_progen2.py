@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
+amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
+aa_list = [x for x in amino_acids]
+
 
 def initialize_progen2(model_name):
     # Define tokenizer and model

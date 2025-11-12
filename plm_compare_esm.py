@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
+amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
+aa_list = [x for x in amino_acids]
+
 def initialize_esm2(model_name, device="cpu"):
     # Define tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name)
