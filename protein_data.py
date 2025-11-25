@@ -99,6 +99,30 @@ def plot_dist(prob_list, plot_range=(0,50)):
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
 
+def wild_type(mut_name, sequence):
+    '''
+    Takes protein mutation name of the form
+    [A12G:D4E:...] and creates the original 
+    wild type sequence.
+    '''
+
+    mut_list = mut_name.split(":")
+
+    for x in mut_list:
+        mut = x
+        len_mut = len(mut)
+        orig = mut[0]
+        pos = int(mut[1:len_mut-1])-1
+        new = mut[len_mut-1]
+
+        if new==sequence[pos]:
+            # print(f"Position {pos + 1} changed from {new} to {orig}.")
+            wild_seq = sequence[:pos] + orig + sequence[pos+1:]
+        else:
+            return f"Amino acid {new} not in position {pos + 1}."
+        
+    return wild_seq
+
 
 class Protein():
     '''
