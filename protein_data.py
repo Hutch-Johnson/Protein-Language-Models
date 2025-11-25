@@ -64,6 +64,16 @@ def prob_like_js(prob_dist1, prob_dist2, threshold=0.5):
     return False
 
 
+def js_non_prob_list(prob_dist1_list, prob_dist2=np.ones(20)/20, threshold=0.5):
+    output=[]
+    n = len(prob_dist1_list)
+    for i in range(n):
+        prob_dist1 = prob_dist1_list[i]
+        if not prob_like_js(prob_dist1,prob_dist2,threshold):
+            output.append(i)
+    return(sorted(output))
+
+
 def plot_dist(prob_list, plot_range=(0,50)):
     '''
     Takes a list of probabilities, prob_list and plots
@@ -98,6 +108,7 @@ def plot_dist(prob_list, plot_range=(0,50)):
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
+
 
 def wild_type(mut_name, sequence):
     '''
