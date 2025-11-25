@@ -1,16 +1,16 @@
-import torch
-from transformers import AutoModelForCausalLM
-from transformers import AutoTokenizer, EsmForMaskedLM
-from tokenizers import Tokenizer
-import torch.nn.functional as F
-
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import pickle
+import torch
+import torch.nn.functional as F
 
+from transformers import AutoModelForCausalLM
+from transformers import AutoTokenizer, EsmForMaskedLM
+from tokenizers import Tokenizer
 from scipy.spatial.distance import jensenshannon
+
 
 def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), 
                 cmap='RdBu_r',sequence='sequence'):
@@ -53,12 +53,23 @@ def pickle_plm_matrices(dict, filename):
 
 
 def prob_like_js(prob_dist1, prob_dist2, threshold=0.5):
+    '''
+    Determines the Jensen-Shannon distance bewteen 
+    prob_dist1 and prob_dist2 and determines if it
+    is smaller than threshold.  Produces boolean
+    based on outcome.
+    '''
     if jensenshannon(prob_dist1, prob_dist2) < threshold:
         return True
     return False
 
 
 def plot_dist(prob_list, plot_range=(0,50)):
+    '''
+    Takes a list of probabilities, prob_list and plots
+    a bar chart of their distribution for the given 
+    range.
+    '''
     eB = prob_list
 
     Blist = [np.array(eB)[i] for i in range(plot_range[0],plot_range[1])]
@@ -87,3 +98,16 @@ def plot_dist(prob_list, plot_range=(0,50)):
 
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.show()
+
+
+class Protein():
+    '''
+    Creates a class for proteins with attributes
+    sequence, name, and length.  
+    Will add attributes for log_prob matrices for
+    ESM and ProGen2
+    '''
+    def __init__(self, sequence, name):
+        self.sequence = sequence
+        self.name = name
+        self.length = len(sequence)

@@ -14,6 +14,9 @@ aa_list = [x for x in amino_acids]
 
 
 def initialize_progen2(model_name):
+    '''
+    Initializes the ProGen2 model with the given name.
+    '''
     # Define tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True)
@@ -23,6 +26,13 @@ def initialize_progen2(model_name):
     return model, tokenizer
 
 def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
+    '''
+    Creates a log probability matrix for each position in the protein
+    for the protein with given sequence, using the given ProGen2 model
+    and tokenizer.  Device is by default cpu but can be changed if using
+    GPU or other device.  Outputs log probability matrix, reference log 
+    probability matirx and log loss ratio matrix.
+    '''
     # Define indices for log-likelihood ratio matrix
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
     aa_token_ids = [tokenizer.convert_tokens_to_ids(aa) for aa in amino_acids]
@@ -62,6 +72,12 @@ def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
 
 
 def seq_matrix_dict_pg2(sequence_list, model, tokenizer,device="cpu"):
+    '''
+    Takes a list of protein sequences and using the given model, tokenizer,
+    and device makes a dictionary of the sequence, log probability matrix, 
+    reference log probability matrix, and log loss ratio matrix using given
+    ProGen2 model.
+    '''
 
     seq_dict = dict()
 

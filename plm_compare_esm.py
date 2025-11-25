@@ -13,6 +13,9 @@ amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
 aa_list = [x for x in amino_acids]
 
 def initialize_esm2(model_name, device="cpu"):
+    '''
+    Initializes the ESM2 model with the given name.
+    '''
     # Define tokenizer and model
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = EsmForMaskedLM.from_pretrained(model_name).to(device)
@@ -21,6 +24,13 @@ def initialize_esm2(model_name, device="cpu"):
     return model, tokenizer
 
 def collect_log_prob_esm2(sequence, model, tokenizer):
+    '''
+    Creates a log probability matrix for each position in the protein
+    for the protein with given sequence, using the given ESM2 model
+    and tokenizer.  Device is by default cpu but can be changed if using
+    GPU or other device.  Outputs log probability matrix, reference log 
+    probability matirx and log loss ratio matrix.
+    '''
     # Define indices for log-likelihood ratio matrix
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
     aa_token_ids = [tokenizer.convert_tokens_to_ids(aa) for aa in amino_acids]
@@ -62,31 +72,13 @@ def collect_log_prob_esm2(sequence, model, tokenizer):
     return log_probs, ref_log_probs, llr_matrix
 
 
-def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), 
-                cmap='RdBu_r',sequence='sequence'):
-
-    amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
-
-    if positions is None:
-        positions = np.arange(llr_matrix.shape[0])
-    else:
-        positions = list(positions)
-    plt.figure(figsize=figsize)
-    sns.heatmap(llr_matrix[positions,:].T,
-                            xticklabels=positions,
-                            yticklabels=list(amino_acids),
-                            cmap=cmap,
-                            center=0,
-                            cbar_kws={'label': 'LLR'})
-    plt.xlabel(f'Position')
-    plt.ylabel('Amino Acid')
-    plt.title(f'Log-Likelihood Ratio Matrix \n {sequence}')
-    plt.tight_layout()
-
-    return plt
-
-
 def seq_matrix_dict_esm2(sequence_list, model, tokenizer):
+    '''
+    Takes a list of protein sequences and using the given model, tokenizer,
+    and device makes a dictionary of the sequence, log probability matrix, 
+    reference log probability matrix, and log loss ratio matrix using given
+    ProGen2 model.
+    '''
 
     seq_dict = dict()
 
