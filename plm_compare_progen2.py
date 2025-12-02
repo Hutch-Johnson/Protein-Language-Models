@@ -31,44 +31,50 @@ def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
     for the protein with given sequence, using the given ProGen2 model
     and tokenizer.  Device is by default cpu but can be changed if using
     GPU or other device.  Outputs log probability matrix, reference log 
-    probability matirx and log loss ratio matrix.
+    probability matrix and log loss ratio matrix.
     '''
     # Define indices for log-likelihood ratio matrix
     amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
     aa_token_ids = [tokenizer.convert_tokens_to_ids(aa) for aa in amino_acids]
 
-    prompt1 = "1"+sequence
-    prompt2 = "1"+sequence[::-1] 
+    prompt1 = "1"+sequence  # run it forwards
+    prompt2 = "2"+sequence[::-1]  # run it backwards
 
     input_ids1 = torch.tensor(tokenizer.encode(prompt1)).unsqueeze(0).to(model.device)
     with torch.no_grad():
         logits1 = model(input_ids1).logits
+    shift_logits1 = logits1[:, :-1, :]  # remove last entry
 
     input_ids2 =  torch.tensor(tokenizer.encode(prompt2)).unsqueeze(0).to(model.device)
     with torch.no_grad():
         logits2 = model(input_ids2).logits
+    shift_logits2 = logits2[:, :-1, :] # remove last entry
 
-    logits2 = logits2[:, torch.arange(logits2.size(1) - 1, -1, -1), :]
+    shift_logits2 = shift_logits2[:, torch.arange(shift_logits2.size(1) - 1, -1, -1), :]
+
+    input_ids = input_ids1[:, 1:]
 
     # take averages of matrices, 2nd one in reverse order
     # to simulate BERT output
 
-    logits = (logits1 + logits2)/2
-    
+    # check on this???
+
+    logits = (shift_logits1 + shift_logits2)/2
+
     log_probs = F.log_softmax(logits, dim = -1)
-    n = log_probs.size(1)
+    # n = log_probs.size(1)
 
-    ref_log_probs = log_probs[0, torch.arange(input_ids1.size(1)), input_ids1[0]]
+    ref_log_probs = log_probs[0, torch.arange(input_ids.size(1)), input_ids[0]]
     ref_log_probs = ref_log_probs.unsqueeze(1)
-    ref_log_probs = ref_log_probs[:n-1]
+    #ref_log_probs = ref_log_probs[:n-1]
 
-    log_probs = log_probs[0,:n-1]
+    #log_probs = log_probs[0,:n-1]
 
     llr_matrix = log_probs - ref_log_probs
-    llr_matrix = llr_matrix[:, aa_token_ids]
-    log_probs = log_probs[:, aa_token_ids]
+    llr_matrix = llr_matrix[0][:, aa_token_ids]
+    log_probs = log_probs[0][:, aa_token_ids]
 
-    return log_probs, ref_log_probs, llr_matrix
+    return np.array(log_probs), np.array(ref_log_probs), np.array(llr_matrix)
 
 
 def seq_matrix_dict_pg2(sequence_list, model, tokenizer,device="cpu"):
