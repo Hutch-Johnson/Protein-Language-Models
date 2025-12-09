@@ -135,6 +135,11 @@ def wild_type(mut_name, sequence):
     return wild_seq
 
 
+def spearman_ignore_nan(a, b):
+    mask = ~np.isnan(a) & ~np.isnan(b)
+    return spearmanr(a[mask], b[mask])
+
+
 class Protein():
     '''
     Creates a class for proteins with attributes
