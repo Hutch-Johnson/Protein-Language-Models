@@ -10,6 +10,7 @@ from transformers import AutoModelForCausalLM
 from transformers import AutoTokenizer, EsmForMaskedLM
 from tokenizers import Tokenizer
 from scipy.spatial.distance import jensenshannon
+from scipy.stats import spearmanr
 
 
 def llr_heatmap(llr_matrix, positions=None, figsize=(15, 10), 
