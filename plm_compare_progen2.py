@@ -108,7 +108,7 @@ def collect_log_prob_pg2_forward(sequence, model, tokenizer, device="cpu"):
 
     # shift_logits2 = shift_logits2[:, torch.arange(shift_logits2.size(1) - 1, -1, -1), :]
 
-    # input_ids = input_ids1[:, 1:]
+    input_ids = input_ids1[:, 1:]
 
     # take averages of matrices, 2nd one in reverse order
     # to simulate BERT output
@@ -119,17 +119,17 @@ def collect_log_prob_pg2_forward(sequence, model, tokenizer, device="cpu"):
     log_probs = F.log_softmax(logits, dim = -1)
     # n = log_probs.size(1)
 
-    # ref_log_probs = log_probs[0, torch.arange(input_ids.size(1)), input_ids[0]]
-    # ref_log_probs = ref_log_probs.unsqueeze(1)
+    ref_log_probs = log_probs[0, torch.arange(input_ids.size(1)), input_ids[0]]
+    ref_log_probs = ref_log_probs.unsqueeze(1)
     #ref_log_probs = ref_log_probs[:n-1]
 
     #log_probs = log_probs[0,:n-1]
 
-    # llr_matrix = log_probs - ref_log_probs
-    # llr_matrix = llr_matrix[0][:, aa_token_ids]
+    llr_matrix = log_probs - ref_log_probs
+    llr_matrix = llr_matrix[0][:, aa_token_ids]
     log_probs = log_probs[0][:, aa_token_ids]
 
-    return np.array(log_probs)
+    return np.array(log_probs), np.array(ref_log_probs), np.array(llr_matrix)
 
 ##############################################################################
 
@@ -160,7 +160,7 @@ def collect_log_prob_pg2_backward(sequence, model, tokenizer, device="cpu"):
 
     shift_logits2 = shift_logits2[:, torch.arange(shift_logits2.size(1) - 1, -1, -1), :]
 
-    # input_ids = input_ids1[:, 1:]
+    input_ids = input_ids1[:, 1:]
 
     # logits of backward pass
 
@@ -169,17 +169,17 @@ def collect_log_prob_pg2_backward(sequence, model, tokenizer, device="cpu"):
     log_probs = F.log_softmax(logits, dim = -1)
     # n = log_probs.size(1)
 
-    # ref_log_probs = log_probs[0, torch.arange(input_ids.size(1)), input_ids[0]]
-    # ref_log_probs = ref_log_probs.unsqueeze(1)
+    ref_log_probs = log_probs[0, torch.arange(input_ids.size(1)), input_ids[0]]
+    ref_log_probs = ref_log_probs.unsqueeze(1)
     #ref_log_probs = ref_log_probs[:n-1]
 
     #log_probs = log_probs[0,:n-1]
 
-    # llr_matrix = log_probs - ref_log_probs
-    # llr_matrix = llr_matrix[0][:, aa_token_ids]
+    llr_matrix = log_probs - ref_log_probs
+    llr_matrix = llr_matrix[0][:, aa_token_ids]
     log_probs = log_probs[0][:, aa_token_ids]
 
-    return np.array(log_probs)
+    return np.array(log_probs), np.array(ref_log_probs), np.array(llr_matrix)
 
 
 
