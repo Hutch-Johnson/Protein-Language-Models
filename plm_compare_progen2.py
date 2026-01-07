@@ -182,6 +182,68 @@ def collect_log_prob_pg2_backward(sequence, model, tokenizer, device="cpu"):
     return np.array(log_probs), np.array(ref_log_probs), np.array(llr_matrix)
 
 
+##############################################################################
+##############################################################################
+### This version uses conditional log probabilities and no batches
+
+
+def collect_logprob_pg2_cond(sequence, model, tokenizer):
+    """
+    Get log probability matrix for a protein sequence.
+    Computes each position based conditionally on all previous positions.
+    
+    Returns:
+        log_probs_matrix: (seq_len, 20) log-probs for all amino acids
+        ref_log_probs: (seq_len, 1) log-probs of the true amino acids
+        llr_matrix: (seq_len, 20) log-likelihood ratios relative to true AA
+    """
+    amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
+    
+    # Token IDs for model lookup
+    aa_to_id = {aa: tokenizer.convert_tokens_to_ids(aa) for aa in amino_acids}
+    # Column index in our log_probs_matrix
+    aa_to_idx = {aa: i for i, aa in enumerate(amino_acids)}
+    
+    log_probs_matrix = []
+
+    for i in range(len(sequence)):
+        # Build prompt: BOS/start token + sequence prefix
+        if i == 0:
+            prompt = tokenizer.bos_token  # or "1" if your tokenizer expects that
+        else:
+            prompt = tokenizer.bos_token + sequence[:i]
+        
+        # Encode prompt
+        input_ids = torch.tensor(tokenizer.encode(prompt, add_special_tokens=False)).unsqueeze(0).to(model.device)
+        
+        # Forward pass
+        with torch.no_grad():
+            logits = model(input_ids).logits  # shape: (1, seq_len, vocab_size)
+        
+        # Logits for next position
+        next_token_logits = logits[0, -1, :]  # shape: (vocab_size,)
+        log_probs = F.log_softmax(next_token_logits, dim=-1)
+        
+        # Extract log-probs for all 20 amino acids
+        position_log_probs = [log_probs[aa_to_id[aa]].item() for aa in amino_acids]
+        log_probs_matrix.append(position_log_probs)
+    
+    log_probs_matrix = torch.tensor(log_probs_matrix, device=model.device)
+    
+    # True amino acid indices for columns
+    true_ids = torch.tensor([aa_to_idx[aa] for aa in sequence], device=model.device)
+    
+    # Reference log-probs of the sequence
+    ref_log_probs = log_probs_matrix[torch.arange(len(sequence)), true_ids].unsqueeze(1)
+    
+    # Log-likelihood ratio
+    llr_matrix = log_probs_matrix - ref_log_probs
+    
+    return log_probs_matrix.cpu().numpy(), ref_log_probs.cpu().numpy(), llr_matrix.cpu().numpy()
+
+##### This version uses conditional log probabilities and batches
+
+
 
 ##############################################################################
 ##############################################################################
