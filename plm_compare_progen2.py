@@ -25,6 +25,16 @@ def initialize_progen2(model_name):
 
     return model, tokenizer
 
+def initialize_progen2_noeval(model_name):
+    '''
+    Initializes the ProGen2 model with the given name.
+    '''
+    # Define tokenizer and model
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True)
+
+    return model, tokenizer
+
 def collect_log_prob_pg2(sequence, model, tokenizer, device="cpu"):
     '''
     Creates a log probability matrix for each position in the protein
