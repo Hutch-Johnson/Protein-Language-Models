@@ -16,6 +16,13 @@ from transformers import AutoTokenizer, EsmForMaskedLM
 from tokenizers import Tokenizer
 from peft import get_peft_model, LoraConfig, TaskType
 
+import os
+
+from io import StringIO
+from google.cloud import storage
+from dotenv import load_dotenv
+
+
 
 # some functions
 # inserts mutation amino acid in corresponding position in protein sequence
