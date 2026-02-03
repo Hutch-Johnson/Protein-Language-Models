@@ -170,3 +170,34 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
 
     return model, train_losses, val_losses
 # , ft_tensor, test_indices
+
+def make_mutation_csv(domain_id):
+
+    domain_id_list=domain_id.split("_")
+    dom_pos = float(domain_id_list[-1])
+
+    load_dotenv()
+    cred_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred_path
+
+    client = storage.Client()
+    bucket = client.bucket('domainome-data')
+    blob = bucket.blob('SupplementaryTable2.txt')
+
+    df = pd.read_csv(StringIO(blob.download_as_text()), sep='\t')
+
+    df_one_protein = df.where(df['domain_ID'] == domain_id).dropna()
+
+    dom_position = df_one_protein['position'] - dom_pos
+    df_one_protein.insert(loc=0, column='real_position', value=dom_position)
+    df_one_protein_ns = df_one_protein[df_one_protein['mut_aa'] != '*'].copy()
+
+    df_one_protein_ns['wt_seq'] = df_one_protein_ns.apply(lambda row: 
+                                                      insert_wt(row['aa_seq'], row['real_position'], row['wt_aa']),
+                                                      axis=1)
+    
+    df_mutation = df_one_protein_ns[['wt_seq','real_position','mut_aa','normalized_fitness']]
+    df_mutation
+    df_mutation.to_csv("mutation_"+domain_id+".csv")
+    
