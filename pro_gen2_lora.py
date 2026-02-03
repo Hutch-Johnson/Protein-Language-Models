@@ -35,7 +35,7 @@ def listwise_ranking_loss(preds, targets):
     return loss.mean()
 
 def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config, 
-                          protein_seq, target_tensor, loss_fn, 
+                          protein_seq, dom_seq, dom_pos, target_tensor, loss_fn, 
                           lrate=-1e-5, num_epochs=5, k=0.8, 
                           num_samples=20, print_info=True):
     '''
@@ -65,7 +65,8 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
     all_indices = torch.randperm(seq_len)
 
     num_train = int(seq_len * k)
-    num_val = seq_len - num_train
+    # num_val = seq_len - num_train
+
     # num_val   = int(seq_len * k/2)
     # num_test  = seq_len - num_train - num_val
 
@@ -96,9 +97,12 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
         wt_norm_tensor = wt_logits[residue_indices, seq_indices].unsqueeze(-1)
         LLR_tensor = wt_logits - wt_norm_tensor
         LLR_tensor_aa_only = LLR_tensor[:, aa_token_ids]
+        LLR_tensor_domain = LLR_tensor_aa_only[dom_pos-1:dom_pos-1+len(dom_seq),:]
 
         # flatten the LLR_tensor
-        flattened_LLR_tensor = LLR_tensor_aa_only.flatten()
+        # flattened_LLR_tensor = LLR_tensor_aa_only.flatten()
+
+        flattened_LLR_tensor = LLR_tensor_domain.flatten()
         flattened_exp_tensor = exp_tensor.to(device)
         flattened_LLR_tensor = flattened_LLR_tensor.to(device)
 
