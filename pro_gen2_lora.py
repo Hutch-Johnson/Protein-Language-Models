@@ -162,5 +162,5 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
             #     print("Validation loss exceeded training loss 3 times — early stopping.")
             #     break
 
-    return model, val_loss
+    return model, train_losses, val_losses
 # , ft_tensor, test_indices
