@@ -36,7 +36,7 @@ def listwise_ranking_loss(preds, targets):
 
 def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config, 
                           protein_seq, target_tensor, loss_fn, 
-                          lrate=-1e-5, num_epochs=5, k=0.5, 
+                          lrate=-1e-5, num_epochs=5, k=0.8, 
                           num_samples=20, print_info=True):
     '''
     device is GPU or CPU
@@ -65,12 +65,14 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
     all_indices = torch.randperm(seq_len)
 
     num_train = int(seq_len * k)
-    num_val   = int(seq_len * k/2)
-    num_test  = seq_len - num_train - num_val
+    num_val = seq_len - num_train
+    # num_val   = int(seq_len * k/2)
+    # num_test  = seq_len - num_train - num_val
 
-    train_indices = all_indices[:num_train] # len 900
-    val_indices   = all_indices[num_train:num_train + num_val]
-    test_indices  = all_indices[num_train + num_val:]
+    train_indices = all_indices[:num_train] 
+    val_indices = all_indices[num_train:]
+    # val_indices   = all_indices[num_train:num_train + num_val]
+    # test_indices  = all_indices[num_train + num_val:]
 
     train_losses = []
     val_losses = []
