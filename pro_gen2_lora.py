@@ -50,7 +50,7 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
     base_model is ProGen2 model
     tokenizer is ProGen2 tokenizer
     lora_config is data for peft lora fine tuning 
-    lr is learning rate for gradien descent on new layer
+    lr is learning rate for gradient descent on new layer
     protein sequence is the sequence lora layer is being trained on
     target_tensor is what loss is measured against initially this is the actual protein sequence
     loss_fn is loss function used in training and validation
