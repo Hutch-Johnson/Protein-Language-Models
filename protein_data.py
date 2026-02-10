@@ -141,6 +141,36 @@ def spearman_ignore_nan(a, b):
     return spearmanr(a[mask], b[mask])
 
 
+def make_mutation_fitness_df(domain_id, df):
+    """
+    Docstring for make_mutation_fitness_df
+    
+    :param domain_id: domain id from domainome
+    :param df: dataframe of domainome data
+
+    Returns a dataframe with wild type sequence for the domain
+    sequence and fitness data from DMS experiments as a 
+    column
+    """
+
+    domain_id_list=domain_id.split("_")
+    dom_pos = float(domain_id_list[-1])
+
+    df_one_protein = df.where(df['domain_ID'] == domain_id).dropna()
+
+    dom_position = df_one_protein['position'] - dom_pos
+    df_one_protein.insert(loc=0, column='real_position', value=dom_position)
+    df_one_protein_ns = df_one_protein[df_one_protein['mut_aa'] != '*'].copy()
+
+    df_one_protein_ns['wt_seq'] = df_one_protein_ns.apply(lambda row: 
+                                                      insert_wt(row['aa_seq'], row['real_position'], row['wt_aa']),
+                                                      axis=1)
+    
+    df_mutation = df_one_protein_ns[['wt_seq','real_position','mut_aa','normalized_fitness']]
+
+    return df_mutation
+
+
 class Protein():
     '''
     Creates a class for proteins with attributes
