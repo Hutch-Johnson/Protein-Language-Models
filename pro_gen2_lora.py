@@ -72,15 +72,9 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
     all_indices = torch.randperm(seq_len)
 
     num_train = int(seq_len * k)
-    # num_val = seq_len - num_train
-
-    # num_val   = int(seq_len * k/2)
-    # num_test  = seq_len - num_train - num_val
 
     train_indices = all_indices[:num_train] 
     val_indices = all_indices[num_train:]
-    # val_indices   = all_indices[num_train:num_train + num_val]
-    # test_indices  = all_indices[num_train + num_val:]
 
     train_losses = []
     val_losses = []
