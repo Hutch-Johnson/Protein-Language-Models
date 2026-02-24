@@ -11,7 +11,7 @@
 # import torch
 
 # from transformers import AutoModelForCausalLM
-# from transformers import AutoTokenizer, EsmForMaskedLM
+# from transformers import AutoTokenizer
 # from tokenizers import Tokenizer
 # from peft import get_peft_model, LoraConfig, TaskType
 
@@ -27,7 +27,10 @@ import pickle
 from google.cloud import storage
 
 import torch
+import torch.nn.functional as F
+
 from peft import LoraConfig, TaskType
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from plm_compare_progen2 import *
 from protein_data import *
@@ -35,10 +38,14 @@ from pro_gen2_lora import *
 
 
 # load device and model
-device = 'cpu'
-print(f"Using {device} device")
+device = 'cuda'
+# print(f"Using {device} device")
 model_name = "hugohrban/progen2-medium"
 base_model, tokenizer = initialize_progen2_noeval(model_name)
+
+# gcs information
+client = storage.Client()
+bucket = client.bucket('domainome-data')
 
 # load fitness data filtered for ProGen2 context window of 1024
 filename = '/Users/johnhutchens/Desktop/Practicum/Data/Domainome/dict_dn_fitness_filtered.pkl'
@@ -106,18 +113,13 @@ for i in range(0,12):
             lp, rlp, llr = collect_log_prob_pg2(seq, model, tokenizer)
             dict_uniprot_LLRs[key]['LLR'] = llr
 
-    # delete model
-    del model
-    gc.collect()
-    torch.cuda.empty_cache()
-
     # store in gcp bucket
-    load_dotenv()
-    cred_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred_path
+    # load_dotenv()
+    # cred_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+    # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred_path
 
-    client = storage.Client()
-    bucket = client.bucket('domainome-data')
+    # client = storage.Client()
+    # bucket = client.bucket('domainome-data')
 
     data = dict_uniprot_LLRs
     compressed_data = gzip.compress(pickle.dumps(data))
@@ -126,4 +128,9 @@ for i in range(0,12):
     blob = bucket.blob("lora_dicts/"+blob_name)
 
     blob.upload_from_string(compressed_data)
+
+    # delete model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
 

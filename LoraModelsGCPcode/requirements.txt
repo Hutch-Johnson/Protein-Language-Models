@@ -1,0 +1,7 @@
+torch
+transformers
+peft
+tokenizers
+google-cloud-storage
+numpy
+pandas
