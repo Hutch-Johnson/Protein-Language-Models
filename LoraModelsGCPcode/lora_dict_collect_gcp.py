@@ -48,14 +48,24 @@ client = storage.Client()
 bucket = client.bucket('domainome-data')
 
 # load fitness data filtered for ProGen2 context window of 1024
-filename = '/Users/johnhutchens/Desktop/Practicum/Data/Domainome/dict_dn_fitness_filtered.pkl'
-with open(filename, "rb") as f:
-    dict_dn_fitness_filtered = pickle.load(f)
+# filename = '/Users/johnhutchens/Desktop/Practicum/Data/Domainome/dict_dn_fitness_filtered.pkl'
+# with open(filename, "rb") as f:
+#     dict_dn_fitness_filtered = pickle.load(f)
+
+blob_name = 'dict_dn_fitness_filtered.pkl'
+blob = bucket.blob(blob_name)
+data_bytes = blob.download_as_bytes()
+dict_dn_fitness_filtered = pickle.loads(data_bytes)
 
 # load domainome data
-filename = '/Users/johnhutchens/Desktop/Practicum/Data/Domainome/dict_domainome_uniprot_new.pkl'
-with open(filename, "rb") as f:
-    dict_uniprot = pickle.load(f)
+# filename = '/Users/johnhutchens/Desktop/Practicum/Data/Domainome/dict_domainome_uniprot_new.pkl'
+# with open(filename, "rb") as f:
+#     dict_uniprot = pickle.load(f)
+
+blob_name = 'dict_domainome_uniprot_new.pkl'
+blob = bucket.blob(blob_name)
+data_bytes = blob.download_as_bytes()
+dict_uniprot = pickle.loads(data_bytes)
 
 # loop that saves LLR outputs from lora models as pkl.gz files of dictionaries
 lora_config = LoraConfig(
