@@ -23,14 +23,12 @@ import os
 import gzip
 import gc
 import pickle
-
-from google.cloud import storage
-
 import torch
 import torch.nn.functional as F
 
 from peft import LoraConfig, TaskType
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from google.cloud import storage
 
 from plm_compare_progen2 import *
 from protein_data import *
@@ -48,20 +46,12 @@ client = storage.Client()
 bucket = client.bucket('domainome-data')
 
 # load fitness data filtered for ProGen2 context window of 1024
-# filename = '/Users/johnhutchens/Desktop/Practicum/Data/Domainome/dict_dn_fitness_filtered.pkl'
-# with open(filename, "rb") as f:
-#     dict_dn_fitness_filtered = pickle.load(f)
-
 blob_name = 'dict_dn_fitness_filtered.pkl'
 blob = bucket.blob(blob_name)
 data_bytes = blob.download_as_bytes()
 dict_dn_fitness_filtered = pickle.loads(data_bytes)
 
 # load domainome data
-# filename = '/Users/johnhutchens/Desktop/Practicum/Data/Domainome/dict_domainome_uniprot_new.pkl'
-# with open(filename, "rb") as f:
-#     dict_uniprot = pickle.load(f)
-
 blob_name = 'dict_domainome_uniprot_new.pkl'
 blob = bucket.blob(blob_name)
 data_bytes = blob.download_as_bytes()
@@ -77,7 +67,6 @@ lora_config = LoraConfig(
     # task_type=TaskType.FEATURE_EXTRACTION
     task_type=TaskType.CAUSAL_LM
 )
-
 
 #loop to create models
 for i in range(0,12):
@@ -124,13 +113,6 @@ for i in range(0,12):
             dict_uniprot_LLRs[key]['LLR'] = llr
 
     # store in gcp bucket
-    # load_dotenv()
-    # cred_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-    # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = cred_path
-
-    # client = storage.Client()
-    # bucket = client.bucket('domainome-data')
-
     data = dict_uniprot_LLRs
     compressed_data = gzip.compress(pickle.dumps(data))
 
