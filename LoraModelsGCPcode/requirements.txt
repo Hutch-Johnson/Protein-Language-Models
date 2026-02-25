@@ -1,6 +1,30 @@
-torch
-transformers>=4.35
-peft>=0.7
-tokenizers
-google-cloud-storage
-numpy
+# torch
+# transformers>=4.35
+# peft>=0.7
+# tokenizers
+# google-cloud-storage
+# numpy
+
+# PyTorch with CUDA 12.1
+# Note: Install from PyTorch index, not PyPI, for CUDA support
+torch==2.1.0+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
+
+# Hugging Face Transformers
+transformers==4.33.3
+
+# Tokenizers (prebuilt wheel, no Rust needed)
+tokenizers==0.13.3
+
+# PEFT for LoRA fine-tuning
+peft==0.5.0
+
+# Google Cloud Storage client
+google-cloud-storage==2.11.0
+
+# Standard utilities
+numpy==1.26.4
+pandas==2.1.1
+matplotlib==3.8.0
+
+# Optional: dotenv for loading environment variables
+python-dotenv==1.0.1
