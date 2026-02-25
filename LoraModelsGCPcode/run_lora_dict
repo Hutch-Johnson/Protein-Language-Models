@@ -1,4 +1,63 @@
-pip install -r requirements.txt
+sudo apt update
+sudo apt install -y make build-essential libssl-dev zlib1g-dev \
+libbz2-dev libreadline-dev libsqlite3-dev curl git \
+libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+libffi-dev liblzma-dev wget unzip
 
-pip install torch --index-url https://download.pytorch.org/whl/cu118
-pip install -r requirements.txt --no-deps
+# Remove any old partial pyenv
+rm -rf ~/.pyenv
+
+# Install pyenv
+curl https://pyenv.run | bash
+
+# Add pyenv to shell
+echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+
+# Reload shell
+source ~/.bashrc
+
+# Verify
+pyenv --version
+
+pyenv install 3.10.13
+pyenv local 3.10.13
+
+# Verify Python version
+python --version
+# Should print: Python 3.10.13
+
+python -m venv progen2_env
+source progen2_env/bin/activate
+python --version
+# Should still print Python 3.10.13
+
+pip install --upgrade pip
+
+# PyTorch with CUDA 12.1 support
+pip install torch==2.1.0+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
+
+# Transformers
+pip install transformers==4.33.3
+
+# Tokenizers prebuilt wheel
+pip install tokenizers==0.13.3 --only-binary=:all:
+
+# PEFT for LoRA
+pip install peft==0.5.0
+
+# Google Cloud Storage client
+pip install google-cloud-storage==2.11.0
+
+# Utilities
+pip install numpy==1.26.4 pandas==2.1.1 matplotlib==3.8.0 python-dotenv==1.0.1
+
+python - <<EOF
+import torch
+import transformers
+import tokenizers
+from peft import LoraConfig, TaskType
+from google.cloud import storage
+print("All packages loaded successfully!")
+EOF

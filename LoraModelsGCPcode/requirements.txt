@@ -4,4 +4,3 @@ peft>=0.7
 tokenizers
 google-cloud-storage
 numpy
-pandas
