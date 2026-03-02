@@ -16,9 +16,9 @@ def initialize_progen2_noeval(model_name):
     from transformers.modeling_utils import PreTrainedModel
     # Patch missing attributes at the class level before loading
     if not hasattr(PreTrainedModel, 'all_tied_weights_keys'):
-        PreTrainedModel.all_tied_weights_keys = []
+        PreTrainedModel.all_tied_weights_keys = {}
     if not hasattr(PreTrainedModel, '_tied_weights_keys'):
-        PreTrainedModel._tied_weights_keys = []
+        PreTrainedModel._tied_weights_keys = {}
 
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True)
