@@ -252,7 +252,8 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
 
 
 # load device and model
-device = 'cuda'
+device = 'cpu'
+# device = 'cuda'
 # print(f"Using {device} device")
 model_name = "hugohrban/progen2-medium"
 base_model, tokenizer = initialize_progen2_noeval(model_name)
@@ -340,5 +341,5 @@ for i in range(0,12):
     # delete model
     del model
     gc.collect()
-    torch.cuda.empty_cache()
+    # torch.cuda.empty_cache()
 
