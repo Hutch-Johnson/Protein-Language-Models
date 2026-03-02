@@ -4,7 +4,9 @@ import gc
 import pickle
 import torch
 import torch.nn.functional as F
+import numpy as np
 
+from multiprocessing import Pool, cpu_count
 from peft import get_peft_model, LoraConfig, TaskType
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from google.cloud import storage
@@ -229,96 +231,98 @@ def FineTune_ProGen2_LORA(device, base_model, tokenizer, lora_config,
 
 
 
+import os
+import gzip
+import gc
+import pickle
+import torch
+import torch.nn.functional as F
+import numpy as np
+from multiprocessing import Pool, cpu_count
+from peft import get_peft_model, LoraConfig, TaskType
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from google.cloud import storage
 
-# load device and model
-device = 'cpu'
-# device = 'cuda'
-# print(f"Using {device} device")
-model_name = "hugohrban/progen2-medium"
-base_model, tokenizer = initialize_progen2_noeval(model_name)
+# ---- All your existing functions go here (unchanged) ----
+# initialize_progen2_noeval, collect_log_prob_pg2, listwise_ranking_loss, FineTune_ProGen2_LORA
 
-# gcs information
-client = storage.Client()
-bucket = client.bucket('domainome-data')
+def process_domain(domain_id):
+    """Worker function — each process handles one domain independently."""
+    print(f"[PID {os.getpid()}] Starting {domain_id}")
 
-# load fitness data filtered for ProGen2 context window of 1024
-blob_name = 'dict_dn_fitness_filtered.pkl'
-blob = bucket.blob(blob_name)
-data_bytes = blob.download_as_bytes()
-dict_dn_fitness_filtered = pickle.loads(data_bytes)
+    # Each worker loads its own model copy (no sharing across processes)
+    model_name = "hugohrban/progen2-medium"
+    base_model, tokenizer = initialize_progen2_noeval(model_name)
 
-# load domainome data
-blob_name = 'dict_domainome_uniprot_new.pkl'
-blob = bucket.blob(blob_name)
-data_bytes = blob.download_as_bytes()
-dict_uniprot = pickle.loads(data_bytes)
+    # Each worker gets its own GCS client
+    client = storage.Client()
+    bucket = client.bucket('domainome-data')
 
-# loop that saves LLR outputs from lora models as pkl.gz files of dictionaries
-lora_config = LoraConfig(
-    r=8,
-    lora_alpha=32,
-    target_modules=["qkv_proj", "out_proj"],
-    lora_dropout=0.1,
-    bias="none",
-    # task_type=TaskType.FEATURE_EXTRACTION
-    task_type=TaskType.CAUSAL_LM
-)
-keys = list(dict_dn_fitness_filtered.keys())
-#loop to create models
-for i in range(0,12):
-    domain_id = keys[i]
-    print(domain_id)
+    blob = bucket.blob('dict_dn_fitness_filtered.pkl')
+    dict_dn_fitness_filtered = pickle.loads(blob.download_as_bytes())
+
+    blob = bucket.blob('dict_domainome_uniprot_new.pkl')
+    dict_uniprot = pickle.loads(blob.download_as_bytes())
+
     dict_entry = dict_dn_fitness_filtered[domain_id]
     dom_pos = int(dict_entry['domain_start'])
     dom_seq = dict_entry['dom_seq']
-
     uniprot_id = dict_entry['uniprot_id']
     protein_seq = dict_uniprot[uniprot_id]['sequence']
+    fitness_tensor = torch.tensor(dict_entry['fitness'])
 
-    fitness_list = dict_entry['fitness']
-    fitness_tensor = torch.tensor(fitness_list)
+    lora_config = LoraConfig(
+        r=8,
+        lora_alpha=32,
+        target_modules=["qkv_proj", "out_proj"],
+        lora_dropout=0.1,
+        bias="none",
+        task_type=TaskType.CAUSAL_LM
+    )
 
+    model, train_losses, val_losses = FineTune_ProGen2_LORA(
+        'cpu', base_model, tokenizer, lora_config,
+        protein_seq, dom_seq, dom_pos, fitness_tensor,
+        listwise_ranking_loss, lrate=1e-3, num_epochs=4,
+        k=0.8, num_samples=10, print_info=False
+    )
 
-    loss = listwise_ranking_loss
+    print(f"[{domain_id}] Train: {train_losses} | Val: {val_losses}")
 
-    eps = 4
-    lr = 1e-3
-    num_samples = 10
-
-    model, train_losses, val_losses = FineTune_ProGen2_LORA(device, base_model, tokenizer, 
-                                            lora_config, protein_seq, dom_seq, dom_pos,
-                                            fitness_tensor, loss, lrate=lr, num_epochs=eps, 
-                                            k=0.8, num_samples=num_samples, print_info=False)
-
-    print(f"Training loss = {train_losses}")
-    print(f"Validation loss = {val_losses}")
-
-    # set fine-tuned model to eval
-    model.eval()   
-
-    # new dictionary to store fine-tuned LLR
+    model.eval()
     dict_uniprot_LLRs = dict_uniprot.copy()
 
     with torch.no_grad():
         for key in dict_uniprot_LLRs.keys():
             seq = dict_uniprot_LLRs[key]['sequence']
-            # print(len(seq))
             if len(seq) > 1024:
                 seq = seq[:1023]
             lp, rlp, llr = collect_log_prob_pg2(seq, model, tokenizer)
             dict_uniprot_LLRs[key]['LLR'] = llr
 
-    # store in gcp bucket
-    data = dict_uniprot_LLRs
-    compressed_data = gzip.compress(pickle.dumps(data))
-
-    blob_name = domain_id+"_lora_LLRs.pkl.gz"
-    blob = bucket.blob("lora_dicts/"+blob_name)
-
+    compressed_data = gzip.compress(pickle.dumps(dict_uniprot_LLRs))
+    blob = bucket.blob(f"lora_dicts/{domain_id}_lora_LLRs.pkl.gz")
     blob.upload_from_string(compressed_data)
 
-    # delete model
-    del model
+    del model, base_model, dict_uniprot_LLRs
     gc.collect()
-    # torch.cuda.empty_cache()
+    print(f"[PID {os.getpid()}] Done with {domain_id}")
+
+
+if __name__ == "__main__":
+    client = storage.Client()
+    bucket = client.bucket('domainome-data')
+    dict_dn_fitness_filtered = pickle.loads(
+        bucket.blob('dict_dn_fitness_filtered.pkl').download_as_bytes()
+    )
+    keys = list(dict_dn_fitness_filtered.keys())[:12]
+
+    # Use however many workers you want — start conservative
+    num_workers = min(6, cpu_count())
+    print(f"Launching pool with {num_workers} workers for {len(keys)} domains")
+
+    with Pool(processes=num_workers) as pool:
+        pool.map(process_domain, keys)
+
+    print("All domains complete.")
 
