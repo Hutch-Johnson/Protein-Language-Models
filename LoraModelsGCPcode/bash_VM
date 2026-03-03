@@ -7,6 +7,6 @@ sudo apt-get install -y tmux
 
 tmux new -s progen2
 
-pip install transformers peft accelerate google-cloud-storage sentencepiece einops torch --break-system-packages
-
 python3 lora_dict_collect_gcp_cpu.py --batch_size 12 --num_workers 1 --total_domains 12
+
+

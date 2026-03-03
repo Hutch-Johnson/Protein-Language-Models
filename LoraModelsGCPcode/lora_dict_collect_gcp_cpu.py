@@ -73,7 +73,7 @@ def initialize_progen2_noeval(model_name):
     for module in model.modules():
         if hasattr(module, 'scale_attn') and isinstance(module.scale_attn, torch.Tensor):
             if module.scale_attn.device.type == 'meta':
-                print("Fixing scale_attn on meta device")
+                # print("Fixing scale_attn on meta device")
                 shape = module.scale_attn.shape
                 dtype = module.scale_attn.dtype
                 module.scale_attn = torch.ones(shape, dtype=dtype, device='cpu')
