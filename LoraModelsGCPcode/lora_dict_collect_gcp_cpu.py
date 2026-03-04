@@ -47,9 +47,12 @@ def initialize_progen2_noeval(model_name):
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         trust_remote_code=True,
-        low_cpu_mem_usage=False,
-        device_map={"": "cpu"}
+        low_cpu_mem_usage=False
+        # device_map={"": "cpu"}
     )
+    for name, module in model.named_modules():
+        if hasattr(module, 'scale_attn') and isinstance(module.scale_attn, torch.Tensor):
+            print(f"{name}: scale_attn device={module.scale_attn.device}, value={module.scale_attn}")
     # Force ALL tensors/buffers to CPU
     model = model.to("cpu")
 
