@@ -1,0 +1,16 @@
+name: progen2_env
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pytorch
+  - cpuonly
+  - numpy
+  - pandas
+  - pip
+  - pip:
+      - transformers
+      - peft
+      - tokenizers
+      - google-cloud-storage
