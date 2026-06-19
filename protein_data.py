@@ -170,15 +170,3 @@ def make_mutation_fitness_df(domain_id, df):
 
     return df_mutation
 
-
-class Protein():
-    '''
-    Creates a class for proteins with attributes
-    sequence, name, and length.  
-    Will add attributes for log_prob matrices for
-    ESM and ProGen2
-    '''
-    def __init__(self, sequence, name):
-        self.sequence = sequence
-        self.name = name
-        self.length = len(sequence)

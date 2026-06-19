@@ -1,8 +1,0 @@
-docker build -t progen2-lora .
-
-docker run progen2-lora
-
-docker run \
--v /home/johnd_hutchens/.ssh:/app/gcp-key.json \
--e GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json \
-progen2-lora
