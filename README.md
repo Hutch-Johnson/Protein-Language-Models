@@ -6,16 +6,16 @@ This repo includes a collection of notebooks and code for comparing ESM2 and Pro
 
 ```text
 .
-├── ColabRuns/                      # Google Colab notebooks and exploratory analyses
-├── Data/                           # Raw and processed protein datasets
+├── ColabRuns/                      # notebooks ran in Google Colab 
+├── Data/                           # Processed data from fine-tuned model output
 ├── Experiments/                    # Experiment outputs, figures, and model checkpoints
 │
-├── Configs_ESM2.ipynb              # ESM2 configuration and setup notebook
+├── Configs_ESM2.ipynb              # ESM2 hyperparameter sweep results
 ├── ESM2_PFAM_boxplots.ipynb        # PFAM-level visualization and analysis
-├── Stats_ESM2_PG2.ipynb            # Statistical comparisons between ESM2 and ProGen2
+├── Stats_ESM2_PG2.ipynb            # Statistical comparisons between ESM2, ProGen2, and fine-tuned models
 │
-├── plm_compare_esm.py              # ESM2 evaluation pipeline
-├── plm_compare_progen2.py          # ProGen2 evaluation pipeline
+├── plm_compare_esm.py              # Code for ESM2 evaluation
+├── plm_compare_progen2.py          # Code for ProGen2 evaluation
 ├── pro_gen2_lora.py                # ProGen2 LoRA fine-tuning script
 ├── protein_data.py                 # Data loading and preprocessing utilities
 │
