@@ -44,11 +44,19 @@ pro_gen2_lora.py import *
 
 ## Statistical Analysis
 
+Different levels of statistical analysis can be found in `Stats_ESM2_PG2.ipynb` comparing different fine-tuned models and base models of ESM2 and ProGen2.  Data collected from the output of fine-tuned models can be found in the `Data` directory.  Base model output data can be found in `base_spearman_csv.gz`.
+
 ## Visualizations
+
+Visualizations of model performance can be found in `Stats_ESM2_PG2.ipynb`.  Visualizations of hyperparameter grid search results for ESM2 fine-tuning can be found in `Configs_ESM2.ipynb`.
 
 ## Reproducibility
 
+Metadata from the fine-tuning runs can be found in `metadata_ESM2_PFAM_ALL.csv.gz`.
+
 ## Results Summary
+
+In many cases we were able to improve the fine-tuned model performance when compared to the base model on Spearman correlation coefficients computed by comparing the log-loss ratio matrix from the models and the experimental DMS data.
 
 ## Contact
 John Hutchens
