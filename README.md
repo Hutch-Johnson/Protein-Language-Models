@@ -56,7 +56,7 @@ Metadata from the fine-tuning runs can be found in `metadata_ESM2_PFAM_ALL.csv.g
 
 ## Results Summary
 
-In many cases we were able to improve the fine-tuned model performance when compared to the base model on Spearman correlation coefficients computed by comparing the log-loss ratio matrix from the models and the experimental DMS data.
+In many cases we were able to improve the fine-tuned model performance when compared to the base model on Spearman correlation coefficients computed by comparing the log-loss ratio matrix from the models and the experimental DMS data.  Details can be found in the notebooks referenced above.
 
 ## Contact
 John Hutchens
