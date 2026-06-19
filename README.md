@@ -32,13 +32,13 @@ There is a .yml file `PMLenv.yml` containing the necessary Python packages.  The
 
 Fine-tune proteinl language models on deep mutational scanning (DMS) data to improve the rank correlation between log-loss ratio matrices outputted by the model and the experimental DMS data.
 
-```</> Bash
+```bash
 conda env create -f PLMenv.yml
-conda activate PLMenv```
+conda activate PLMenv
 
-```</> Bash
 from plm_compare_esm import *
 from plm_compare_progen2 import *
 from protein_data.py import *
 pro_gen2_lora.py import *
 ```
+
