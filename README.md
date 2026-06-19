@@ -30,7 +30,7 @@ There is a .yml file `PMLenv.yml` containing the necessary Python packages.  The
 
 ## Project Goals
 
-Fine-tune proteinl language models on deep mutational scanning (DMS) data to improve the rank correlation between log-loss ratio matrices outputted by the model and the experimental DMS data.
+Fine-tune protein language models on deep mutational scanning (DMS) data to improve the rank correlation between log-loss ratio matrices outputted by the model and the experimental DMS data.
 
 ```bash
 conda env create -f PLMenv.yml
@@ -42,3 +42,17 @@ from protein_data.py import *
 pro_gen2_lora.py import *
 ```
 
+## Statistical Analysis
+
+## Visualizations
+
+## Reproducibility
+
+## Results Summary
+
+## Contact
+John Hutchens
+
+jhutchens@usfca.edu
+
+University of San Francisco
