@@ -7,22 +7,36 @@ There is a .yml file `PMLenv.yml` containing the necessary Python packages.  The
 ## Repo Structure
 
 .
+
 ├── ColabRuns/                  # Google Colab experiments
 
 ├── Data/                       # Input datasets and processed files
+
 ├── Experiments/                # Experiment outputs and results
+
 │
 ├── Configs_ESM2.ipynb          # ESM2 configuration notebook
+
 ├── ESM2_PFAM_boxplots.ipynb    # PFAM-level visualization
+
 ├── Stats_ESM2_PG2.ipynb        # Statistical analyses
+
 │
+
 ├── plm_compare_esm.py          # ESM2 evaluation pipeline
+
 ├── plm_compare_progen2.py      # ProGen2 evaluation pipeline
+
 ├── pro_gen2_lora.py            # ProGen2 LoRA fine-tuning
+
 ├── protein_data.py             # Dataset loading and preprocessing
+
 │
+
 ├── full_matrix_pg2.png         # Example visualization
+
 ├── PLMenv.yml                  # Conda environment
+
 └── README.md
 
 ## Project Goals
