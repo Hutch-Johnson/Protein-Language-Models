@@ -36,6 +36,7 @@ Fine-tune proteinl language models on deep mutational scanning (DMS) data to imp
 conda env create -f PLMenv.yml
 conda activate PLMenv```
 
-`from plm_compare_esm import *`
-
-`from plm_compare_progen2 import *`
+```bash
+from plm_compare_esm import *
+from plm_compare_progen2 import *
+```
