@@ -2,9 +2,6 @@
 
 This repo includes a collection of notebooks and code for comparing ESM2 and ProGen2 protein language models (PLMs).  The focus in on fine-tuning these PLMs using low rank adaptation (LoRA).
 
-There is a .yml file `PMLenv.yml` containing the necessary Python packages.  The file `plm_compare_esm.py` and `plm_compare_progen2.py` contain fucntions for initiating ESM and ProGen models respectively.  Along with functions for storing log-probabilities matrices, ref_log_probs, llr_matrix into a dictionary.  Then there are functions for saving the dictionaries as .pickle files.
-
-
 ## Repository Structure
 
 ```text
